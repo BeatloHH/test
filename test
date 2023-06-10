@@ -3,17 +3,25 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
-# Definiere die URL der Branche und der Stadt
-branchen_url = "https://www.gelbeseiten.de/branchenbuch/rechtsanwaelte"
-stadt_url = "https://www.gelbeseiten.de/branchenbuch/berlin"
+# Definiere die URL der Branche und der Stadt als Konstanten
+BRANCHEN_URL = "https://www.gelbeseiten.de/branchenbuch/rechtsanwaelte"
+STADT_URL = "https://www.gelbeseiten.de/branchenbuch/berlin"
 
 # Definiere eine Funktion, die eine Anfrage an eine URL sendet und die Antwort zurückgibt
 def get_response(url):
 try:
-response = requests.get(url)
+# Definiere einen User-Agent
+user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36"
+# Definiere einen Timeout in Sekunden
+timeout = 10
+# Sende eine GET-Anfrage an die URL mit dem User-Agent und dem Timeout
+response = requests.get(url, headers={"User-Agent": user_agent}, timeout=timeout)
+# Überprüfe, ob die Anfrage erfolgreich war
 response.raise_for_status()
+# Gib die Antwort zurück
 return response
 except requests.exceptions.RequestException as e:
+# Gib einen Fehler aus, wenn die Anfrage fehlgeschlagen ist
 print(f"Fehler: Die Anfrage ist fehlgeschlagen. {e}")
 
 # Definiere die Anzahl der Seiten, die du durchsuchen möchtest
@@ -25,7 +33,7 @@ results = []
 # Iteriere über die Seiten
 for page in range(1, pages + 1):
 # Kombiniere die URLs mit dem Seitenparameter zu einer Gesamt-URL
-gesamt_url = urljoin(branchen_url, stadt_url.split("/")[-1]) + f"?seite={page}"
+gesamt_url = urljoin(BRANCHEN_URL, STADT_URL.split("/")[-1]) + f"?seite={page}"
 
 # Sende eine Anfrage an die Gesamt-URL und speichere die Antwort
 response = get_response(gesamt_url)
@@ -75,3 +83,4 @@ print(f"Branche: {result['Branche']}")
 print(f"Name: {result['Name']}")
 print(f"Adresse: {result['Adresse']}")
 print("-" * 40)
+
